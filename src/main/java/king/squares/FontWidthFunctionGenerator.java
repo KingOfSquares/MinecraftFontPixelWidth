@@ -213,8 +213,8 @@ public class FontWidthFunctionGenerator {
     //fast track if only bitmap/ttf glyphs are used
     if (!this.boldOffsets.values().contains(false)) {
       return new IfStmt()
-          .setCondition(new NameExpr("i != -1 && style.hasDecoration(TextDecoration.BOLD)"))
-          .setThenStmt(new ExpressionStmt(new NameExpr("i++")));
+          .setCondition(new NameExpr("width != -1 && style.hasDecoration(TextDecoration.BOLD)"))
+          .setThenStmt(new ExpressionStmt(new NameExpr("width++")));
     }
 
     final SwitchEntry switchEntry1 = new SwitchEntry();
