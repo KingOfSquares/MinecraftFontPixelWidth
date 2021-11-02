@@ -3,5 +3,7 @@
 /build
 /run
 /logs
-.iml
+*.iml
+.DS_STORE
+/gradle
 

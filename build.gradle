@@ -1,0 +1,71 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.spongepowered.gradle.vanilla' version "0.2"
+    id 'net.kyori.indra.checkstyle' version '2.0.6'
+    id "me.champeau.jmh" version "0.6.6"
+}
+
+project.ext.lwjglVersion = "3.2.3"
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
+                ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+                : "natives-linux"
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.contains("64")
+                ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+                : "natives-windows-x86"
+        break
+}
+
+repositories {
+    mavenCentral()
+}
+
+minecraft {
+    latestRelease()
+}
+
+dependencies {
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.18.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.checkerframework:checker-qual:3.12.0'
+    implementation 'org.jetbrains:annotations:22.0.0'
+    implementation 'org.lwjgl:lwjgl'
+    implementation 'org.lwjgl:lwjgl-jemalloc'
+    implementation 'org.lwjgl:lwjgl-stb'
+    implementation 'net.kyori:adventure-api:4.9.2'
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+
+    jmh 'com.github.javaparser:javaparser-symbol-solver-core:3.18.0'
+    jmh 'org.jetbrains:annotations:22.0.0'
+
+    checkstyle 'ca.stellardrift:stylecheck:0.1'
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Main-Class': mainClassName)
+    }
+}
+
+mainClassName = 'king.squares.MinecraftFontPixelWidth'
+group = 'king.squares'
+version = '1.0'
+description = 'FontWidthCalculator'
+java.sourceCompatibility = JavaVersion.VERSION_16
+
