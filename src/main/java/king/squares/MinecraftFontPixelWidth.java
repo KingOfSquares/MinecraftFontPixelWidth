@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +52,7 @@ public final class MinecraftFontPixelWidth {
   private static final SimpleReloadableResourceManager manager = new SimpleReloadableResourceManager(PackType.CLIENT_RESOURCES);
   private static final List<MojangGlyphProvider> glyphProviders = new ArrayList<>();
 
-  public static void main(String[] args) throws IOException {
-    args = new String[]{"-g", "ascii"};
-
+  public static void main(final String[] args) throws IOException {
     configureLogging();
     populateResourceManager();
     final InputStream defaultJson = findProviderJson();
@@ -186,7 +184,7 @@ public final class MinecraftFontPixelWidth {
   }
 
   private static Map<Float, List<@NotNull Integer>> makePreppedMap() {
-    final Map<Float, List<@NotNull Integer>> prepped = new HashMap<>();
+    final Map<Float, List<@NotNull Integer>> prepped = new LinkedHashMap<>();
     for (float i = 0; i < 16; i++) {
       prepped.put(i, new LinkedList<>());
     }

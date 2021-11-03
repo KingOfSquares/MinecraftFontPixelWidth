@@ -23,7 +23,7 @@ public class Benchmarker {
   @Benchmark
   public float testFunction() throws IOException {
     float width = 0;
-    for (final int i : this.testSet) width += this.f.applyFloat(i, Style.empty());
+    for (final int i : this.testSet) width += this.f.widthOf(i, Style.empty());
     return width;
   }
 }

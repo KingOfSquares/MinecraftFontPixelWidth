@@ -175,12 +175,14 @@ public class FontWidthFunctionGenerator {
   }
 
   //True if able to use enchanced switch labes (multiple numbers on one case)
-  private NodeList<SwitchEntry> createSizeSwitchStatements(boolean java14) {
+  private NodeList<SwitchEntry> createSizeSwitchStatements(final boolean java14) {
     final NodeList<SwitchEntry> switchEntries = nodeList();
 
     for (final Map.Entry<Float, List<Integer>> entry : this.sizes.entrySet()) {
       final List<Integer> glyphs = entry.getValue();
       final NodeList<Expression> labels = nodeList();
+
+      if (glyphs.isEmpty()) continue;
 
       final ExpressionStmt assignValue =
           new ExpressionStmt(
@@ -202,7 +204,7 @@ public class FontWidthFunctionGenerator {
         for (final Integer glyph : glyphs) {
           switchEntries.add(new SwitchEntry().setLabels(nodeList(new IntegerLiteralExpr(String.valueOf(glyph)))));
         }
-        switchEntries.getLast().orElse(new SwitchEntry()).setStatements(nodeList(assignValue, new BreakStmt().removeLabel()));
+        switchEntries.getLast().get().setStatements(nodeList(assignValue, new BreakStmt().removeLabel()));
       }
     }
 
