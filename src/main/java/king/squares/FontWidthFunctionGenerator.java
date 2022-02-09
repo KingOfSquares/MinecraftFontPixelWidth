@@ -31,6 +31,10 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
+import com.github.javaparser.printer.configuration.Indentation;
+import com.github.javaparser.printer.configuration.PrinterConfiguration;
 import it.unimi.dsi.fastutil.ints.Int2BooleanArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import java.io.IOException;
@@ -46,6 +50,9 @@ import static com.github.javaparser.ast.NodeList.nodeList;
 
 public class FontWidthFunctionGenerator {
 
+  private static final PrinterConfiguration printerConfig =
+      new DefaultPrinterConfiguration()
+          .addOption(new DefaultConfigurationOption(DefaultPrinterConfiguration.ConfigOption.INDENTATION, new Indentation(Indentation.IndentType.SPACES, 2)));
   private static final int CHECKPOINT_THRESHOLD = Integer.MAX_VALUE - 1; //Not used rn
 
   private final NameExpr widthVariable = new NameExpr("width");
@@ -58,8 +65,8 @@ public class FontWidthFunctionGenerator {
 
   public FontWidthFunctionGenerator(final Map<Float, List<@NotNull Integer>> sizes, final Int2BooleanArrayMap boldOffsets, final boolean java14) {
     this.unit = new CompilationUnit();
-    final NameExpr className = new NameExpr("FontWidthFunction");
-    this.clazz = this.unit.addClass(className.getNameAsString(), Modifier.Keyword.PUBLIC);
+    final String className = "FontWidthFunction";
+    this.clazz = this.unit.addClass(className, Modifier.Keyword.PUBLIC);
     this.sizes = sizes;
     this.boldOffsets = boldOffsets;
     this.totalCodepointAmount = sizes.values().stream().mapToInt(List::size).sum();
@@ -71,17 +78,12 @@ public class FontWidthFunctionGenerator {
         .addImport(NotNull.class)
         .setPackageDeclaration("king.squares");
 
-    final FieldDeclaration instanceField = this.clazz.addField(className.getNameAsString(), "INSTANCE", Modifier.Keyword.PUBLIC, Modifier.Keyword.STATIC, Modifier.Keyword.FINAL);
-    instanceField.getVariable(0).setInitializer(new ObjectCreationExpr().setType(StaticJavaParser.parseClassOrInterfaceType(className.getNameAsString())));
+    final FieldDeclaration instanceField = this.clazz.addField(className, "INSTANCE", Modifier.Keyword.PUBLIC, Modifier.Keyword.STATIC, Modifier.Keyword.FINAL);
+    instanceField.getVariable(0).setInitializer(new ObjectCreationExpr().setType(StaticJavaParser.parseClassOrInterfaceType(className)));
 
     if (this.totalCodepointAmount > CHECKPOINT_THRESHOLD) this.createCheckpointSystem();
 
     this.createMainMethod(this.clazz.addMethod("widthOf", Modifier.Keyword.PUBLIC, Modifier.Keyword.FINAL), java14);
-
-  }
-
-  public String makeClass() {
-    return this.unit.toString();
   }
 
   private void createMainMethod(final MethodDeclaration method, final boolean java14) {
@@ -260,5 +262,9 @@ public class FontWidthFunctionGenerator {
     expr.setInitializer(arrayInitExpr);
 
     return expr;
+  }
+
+  public String makeClass() {
+    return this.unit.toString(printerConfig);
   }
 }

@@ -1,7 +1,5 @@
 package king.squares;
 
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.printer.PrettyPrinterConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -52,21 +50,25 @@ public final class MinecraftFontPixelWidth {
   private static final SimpleReloadableResourceManager manager = new SimpleReloadableResourceManager(PackType.CLIENT_RESOURCES);
   private static final List<MojangGlyphProvider> glyphProviders = new ArrayList<>();
 
+  /**
+   * @param args see {@link #parseGlyphSets(String[])}
+   */
   public static void main(final String[] args) throws IOException {
     configureLogging();
     populateResourceManager();
-    final InputStream defaultJson = findProviderJson();
-    logger.info("Provider document chosen and validated");
-    final InputStreamReader fileReader = new InputStreamReader(defaultJson);
-    final JsonObject jsonArrayObject = GsonHelper.fromJson(gson, fileReader, JsonObject.class);
-    if (jsonArrayObject == null) {
-      logger.severe("Error reading default.json");
+    final InputStream providersJson = findProviderJson();
+    final InputStreamReader providersJsonReader = new InputStreamReader(providersJson);
+    final JsonObject providersJsonArrayObject = GsonHelper.fromJson(gson, providersJsonReader, JsonObject.class);
+    if (providersJsonArrayObject == null) {
+      logger.severe("Error reading provider document");
       System.exit(1);
     }
-    final JsonArray providers = GsonHelper.getAsJsonArray(jsonArrayObject, "providers");
-    logger.info("Found " + providers.size() + " glyph providers:");
-    for (int i = providers.size() - 1; i >= 0; --i) {
-      final JsonObject provider = GsonHelper.convertToJsonObject(providers.get(i), "providers[" + i + "]");
+    logger.info("Provider document chosen and validated");
+
+    final JsonArray providersJsonArray = GsonHelper.getAsJsonArray(providersJsonArrayObject, "providers");
+    logger.info("Found " + providersJsonArray.size() + " glyph providers:");
+    for (int i = providersJsonArray.size() - 1; i >= 0; --i) {
+      final JsonObject provider = GsonHelper.convertToJsonObject(providersJsonArray.get(i), "providers[" + i + "]");
       final String type = GsonHelper.getAsString(provider, "type");
       final GlyphProvider glyphs;
       final String file;
@@ -97,8 +99,6 @@ public final class MinecraftFontPixelWidth {
 
     final File delete = new File(FILE_NAME);
     if (delete.isFile()) logger.info("Deleted old " + FILE_NAME + ": " + delete.delete());
-
-    configureJavaparserPrinting();
 
     logger.info("Creating FontWidthFunction code generator...");
     final FontWidthFunctionGenerator generator = new FontWidthFunctionGenerator(sizes, boldOffsets, false); //TODO: option to use new switch features
@@ -192,6 +192,9 @@ public final class MinecraftFontPixelWidth {
     return prepped;
   }
 
+  /**
+   * Args given as: "-g glyphSetName" e.g "-g ASCII"
+   */
   private static EnumSet<GlyphSet> parseGlyphSets(final String[] args) {
     final EnumSet<GlyphSet> set = EnumSet.noneOf(GlyphSet.class);
     boolean nextArgIsFlag = false;
@@ -203,19 +206,13 @@ public final class MinecraftFontPixelWidth {
       }
       try {
         set.add(GlyphSet.valueOf(arg.toUpperCase()));
-        logger.info("Parsed glyph set: " + arg.toUpperCase());
+        logger.info("Parsed requested glyph set: " + arg.toUpperCase());
       } catch (final IllegalArgumentException e) {
-        logger.warning("Skipped over wrong argument: " + arg);
+        logger.warning("Skipping over wrong glyph set argument: " + arg);
       } finally {
         nextArgIsFlag = false;
       }
     }
     return set;
-  }
-
-  private static void configureJavaparserPrinting() {
-    final PrettyPrinterConfiguration conf = Node.getToStringPrettyPrinterConfiguration();
-    conf.setIndentSize(2);
-    conf.setTabWidth(2);
   }
 }
