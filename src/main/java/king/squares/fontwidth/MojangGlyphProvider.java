@@ -1,4 +1,4 @@
-package king.squares;
+package king.squares.fontwidth;
 
 import com.mojang.blaze3d.font.GlyphProvider;
 import com.mojang.blaze3d.font.RawGlyph;

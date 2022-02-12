@@ -1,4 +1,4 @@
-package king.squares;
+package king.squares.fontwidth;
 
 import java.util.logging.Formatter;
 import java.util.logging.Level;

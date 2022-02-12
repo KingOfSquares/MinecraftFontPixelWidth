@@ -1,4 +1,4 @@
-package king.squares;
+package king.squares.fontwidth;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;

@@ -1,4 +1,4 @@
-package king.squares;
+package king.squares.fontwidth;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,6 +54,7 @@ public final class MinecraftFontPixelWidth {
    * @param args see {@link #parseGlyphSets(String[])}
    */
   public static void main(final String[] args) throws IOException {
+    checkMinecraftPresent();
     configureLogging();
     populateResourceManager();
     final InputStream providersJson = findProviderJson();
@@ -214,5 +215,13 @@ public final class MinecraftFontPixelWidth {
       }
     }
     return set;
+  }
+
+  private static void checkMinecraftPresent() throws IOException {
+    try {
+      Class.forName("net.minecraft.client.Minecraft");
+    } catch (ClassNotFoundException e) {
+      throw new IOException("Minecraft not found on the classpath, did you run minecraft import before running?", e);
+    }
   }
 }

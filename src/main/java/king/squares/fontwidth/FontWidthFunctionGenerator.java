@@ -1,4 +1,4 @@
-package king.squares;
+package king.squares.fontwidth;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;

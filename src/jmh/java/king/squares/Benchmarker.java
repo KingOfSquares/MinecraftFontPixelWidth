@@ -2,6 +2,8 @@ package king.squares;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import king.squares.fontwidth.FontWidthFunction;
 import net.kyori.adventure.text.format.Style;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;

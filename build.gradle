@@ -7,7 +7,7 @@ plugins {
     id 'me.champeau.jmh' version '0.6.6'
 }
 
-project.ext.lwjglVersion = '3.2.3'
+project.ext.lwjglVersion = '3.2.1'
 
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
@@ -37,18 +37,11 @@ minecraft {
 
 dependencies {
     implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.24.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'org.jetbrains:annotations:22.0.0'
-    implementation 'it.unimi.dsi:fastutil:8.5.6'
-    implementation files('lib/joined-1.18.1.jar')
+    implementation 'net.kyori:adventure-api:4.9.3'
     implementation "org.lwjgl:lwjgl::$lwjglNatives"
     implementation "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
     implementation "org.lwjgl:lwjgl-stb::$lwjglNatives"
-    implementation 'net.kyori:adventure-api:4.9.3'
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 
     jmh 'com.github.javaparser:javaparser-symbol-solver-core:3.24.0'
     jmh 'org.jetbrains:annotations:22.0.0'

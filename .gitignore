@@ -7,4 +7,4 @@
 *.iml
 .DS_STORE
 /gradle
-/src/main/java/king/squares/FontWidthFunction.java
+/src/main/java/king/squares/fontwidth/FontWidthFunction.java
